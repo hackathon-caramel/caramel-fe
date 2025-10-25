@@ -46,7 +46,8 @@ const albums: CardMeta[] = [
 
 const createCardMeta: CreateCardMeta = {
   kind: "create",
-  gradient: "linear-gradient(135deg,#83a4d4 0%,#b6fbff 100%)",
+  // switched to a red-themed gradient for the create card
+  gradient: "linear-gradient(135deg,#ff6b6b 0%,#d7263d 100%)",
 };
 
 const CARD_GAP = 160;
@@ -297,7 +298,7 @@ export default function Home() {
 
                 const style: CSSProperties = {
                   backgroundImage: gradient,
-                  transform: `translate3d(-50%, calc(-50% + ${offsetForCard - 80}px), ${depthShift}px) scale(${scale})`,
+                  transform: `translate3d(-50%, calc(-50% + ${offsetForCard - 90}px), ${depthShift}px) scale(${scale})`,
                   boxShadow: isCreate ? createShadow : defaultShadow,
                   zIndex: totalCards - Math.round(distance * 10),
                   opacity: isFourthOrBeyond ? 0 : 1,
@@ -321,7 +322,22 @@ export default function Home() {
                     aria-hidden={isFourthOrBeyond}
                   >
                     {isCreate ? (
-                      <Link href={"/create"}>
+                      <Link
+                        href={"/create"}
+                        className="flex flex-col flex-1 justify-between"
+                        onPointerDown={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onPointerMove={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onPointerUp={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-[#110502]/60">
                           <span className="font-semibold text-[#110502]">00</span>
                           <span className="rounded-full border border-[#110502]/30 px-3 py-1">
@@ -341,20 +357,16 @@ export default function Home() {
                             </p>
                           </div>
                         </div>
-                        <footer className="pt-4">
-                          <button
-                            type="button"
-                            onClick={handleAddAlbum}
-                            className="inline-flex items-center gap-2 rounded-full bg-white/40 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-[#110502] shadow-[0_15px_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-1 hover:bg-white/55 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/60"
-                          >
-                            Start
-                          </button>
-                        </footer>
+                        {/* Start 버튼 제거: 카드 전체가 링크로 동작합니다. */}
                       </Link>
                     ) : (
                       <Link
-                        href={`/player/${(item as CardMeta).id}`}
+                        href="/player"
                         className="flex flex-col flex-1 justify-between"
+                        onPointerDown={(e) => { e.stopPropagation(); }}
+                        onPointerMove={(e) => { e.stopPropagation(); }}
+                        onPointerUp={(e) => { e.stopPropagation(); }}
+                        onClick={(e) => { e.stopPropagation(); }}
                       >
                         <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-[#110502]/60">
                           <span className="font-semibold">

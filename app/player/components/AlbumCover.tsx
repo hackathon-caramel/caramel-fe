@@ -7,9 +7,10 @@ type AlbumCoverProps = {
   title?: string;
   artist?: string;
   rotationDeg?: number;
+  imageSrc?: string;
 };
 
-export default function AlbumCover({ colors, isPlaying = false, onClick, title, artist, rotationDeg = 0 }: AlbumCoverProps) {
+export default function AlbumCover({ colors, isPlaying = false, onClick, title, artist, rotationDeg = 0, imageSrc = "/image.png" }: AlbumCoverProps) {
   const [color1, color2, color3] = colors;
 
   return (
@@ -37,7 +38,7 @@ export default function AlbumCover({ colors, isPlaying = false, onClick, title, 
           }}
         >
           <Image
-            src="/image.png"
+            src={imageSrc}
             alt={title ? `${title} - ${artist ?? ''}` : '회전 이미지'}
             fill
             className="object-cover"

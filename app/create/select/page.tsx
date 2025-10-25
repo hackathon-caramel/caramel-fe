@@ -1,32 +1,8 @@
 'use client';
 
 import { Suspense, useCallback, useMemo, useState } from "react";
-// removed gradient borders from keyword cards
 import { useRouter, useSearchParams } from "next/navigation";
-
-type KeywordOption = {
-  id: string;
-  label: string;
-  description: string;
-};
-
-const KEYWORD_OPTIONS: KeywordOption[] = [
-  {
-    id: "campfire-story",
-    label: "Campfire Story",
-    description: "밤공기를 가르는 목소리와 장작 타는 소리를 담아요.",
-  },
-  {
-    id: "dawn-chorus",
-    label: "Dawn Chorus",
-    description: "새벽녘 새소리와 함께 시작되는 첫 트랙.",
-  },
-  {
-    id: "city-echo",
-    label: "City Echo",
-    description: "도시의 반짝이는 하루를 감싸는 리듬.",
-  },
-];
+import { mockKeywords } from "../../utils/mockKeywords";
 
 function SelectContent() {
   const router = useRouter();
@@ -35,20 +11,12 @@ function SelectContent() {
   const initialKeyword = useMemo(() => searchParams.get("keyword") ?? "", [searchParams]);
 
   const [selectedKeyword, setSelectedKeyword] = useState(initialKeyword);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSelect = useCallback((keywordId: string) => {
     setSelectedKeyword(keywordId);
-    setError(null);
-  }, []);
-
-  const handleContinue = useCallback(() => {
-    if (!selectedKeyword) {
-      setError("키워드를 선택해 주세요.");
-      return;
-    }
-    router.push(`/create/loading/generate?keyword=${encodeURIComponent(selectedKeyword)}`);
-  }, [router, selectedKeyword]);
+    // Navigate immediately after selection
+    router.push(`/create/loading/generate?keyword=${encodeURIComponent(keywordId)}`);
+  }, [router]);
 
   return (
     <div
@@ -77,7 +45,7 @@ function SelectContent() {
 
       <main className="relative z-10 flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 py-8">
         <div className="grid w-full gap-4 md:grid-cols-3">
-          {KEYWORD_OPTIONS.map((option) => {
+          {mockKeywords.map((option) => {
             const isActive = option.id === selectedKeyword;
             return (
               <button
@@ -112,28 +80,15 @@ function SelectContent() {
             );
           })}
         </div>
-
-        {error && (
-          <div className="rounded-2xl border border-rose-400/40 bg-rose-500/20 px-4 py-3 text-sm text-rose-100 backdrop-blur-sm">
-            {error}
-          </div>
-        )}
       </main>
 
-      <footer className="relative z-10 flex w-full max-w-3xl items-center justify-between gap-4 pt-6">
+      <footer className="relative z-10 flex w-full max-w-3xl items-center justify-center gap-4 pt-6">
         <button
           type="button"
           onClick={() => router.back()}
           className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:border-white/40 hover:text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/60"
         >
           Back
-        </button>
-        <button
-          type="button"
-          onClick={handleContinue}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-xs md:text-sm font-semibold uppercase tracking-[0.35em] text-white shadow-[0_20px_40px_rgba(255,173,94,0.45)] transition hover:from-amber-400 hover:to-orange-400 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/60"
-        >
-          Continue
         </button>
       </footer>
     </div>

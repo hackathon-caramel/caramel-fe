@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 // removed gradient borders from keyword cards
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -28,7 +28,7 @@ const KEYWORD_OPTIONS: KeywordOption[] = [
   },
 ];
 
-export default function SelectPage() {
+function SelectContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -137,5 +137,26 @@ export default function SelectPage() {
         </button>
       </footer>
     </div>
+  );
+}
+
+export default function SelectPage() {
+  return (
+    <Suspense fallback={
+      <div
+        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-10 text-amber-50"
+        style={{ background: 'radial-gradient(circle at top, #1a090d, #0d0307 55%, #050203)' }}
+      >
+        <div className="pointer-events-none absolute inset-0 blur-[6px]" style={{ background: 'radial-gradient(70% 40% at 50% 16%, rgba(255,173,94,0.35), transparent 70%), radial-gradient(55% 45% at 18% 88%, rgba(255,84,62,0.22), transparent 75%), radial-gradient(50% 35% at 80% 78%, rgba(99,102,241,0.18), transparent 70%)' }} />
+        <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-white" aria-hidden="true" />
+          <h1 className="text-[clamp(1.8rem,3vw+1rem,2.6rem)] font-semibold text-white">
+            준비하고 있어요...
+          </h1>
+        </div>
+      </div>
+    }>
+      <SelectContent />
+    </Suspense>
   );
 }

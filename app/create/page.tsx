@@ -32,8 +32,8 @@ export default function CreatePage() {
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const countdownIntervalRef = useRef<number>();
-  const stopTimeoutRef = useRef<number>();
+  const countdownIntervalRef = useRef<number | undefined>(undefined);
+  const stopTimeoutRef = useRef<number | undefined>(undefined);
 
   const [cameraReady, setCameraReady] = useState(false);
   const [isRecording, setIsRecording] = useState(false);

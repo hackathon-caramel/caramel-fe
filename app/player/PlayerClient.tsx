@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AlbumCover from './components/AlbumCover';
 import Tonearm from './components/Tonearm';
+import { mockAlbums } from '../utils/mockAlbums';
 
 type Track = {
   id: string;
@@ -27,27 +28,39 @@ const defaultTrack: Track = {
 
 const assetsByUuid: Record<string, { image: string; video: string; audio?: string; track: Track }> = {
   '1': {
-    image: '/image1.png',
+    image: '/1.png',
     video: '/video1.mov',
-    audio: '/audio1.mp3',
+    audio: '/1.mp3',
     track: {
-      id: 'uuid-1',
-      title: '테스트 트랙 1',
-      artist: 'Sample Artist',
+      id: '1',
+      title: mockAlbums[0].title,
+      artist: mockAlbums[0].subtitle,
       duration: 215,
-      colors: ['#ff9a9e', '#fad0c4', '#fbc2eb'],
+      colors: ['#ffb347', '#ff6f61', '#b33951'],
     },
   },
   '2': {
-    image: '/image2.png',
+    image: '/2.png',
     video: '/video2.mov',
-    audio: '/audio2.mp3',
+    audio: '/2.mp3',
     track: {
-      id: 'uuid-2',
-      title: '테스트 트랙 2',
-      artist: 'Demo Artist',
+      id: '2',
+      title: mockAlbums[1].title,
+      artist: mockAlbums[1].subtitle,
       duration: 202,
-      colors: ['#a1c4fd', '#c2e9fb', '#b7f8db'],
+      colors: ['#74ebd5', '#9face6', '#a1c4fd'],
+    },
+  },
+  '3': {
+    image: '/3.png',
+    video: '/video3.mov',
+    audio: '/3.mp3',
+    track: {
+      id: '3',
+      title: mockAlbums[2].title,
+      artist: mockAlbums[2].subtitle,
+      duration: 198,
+      colors: ['#ff9a9e', '#fad0c4', '#fbc2eb'],
     },
   },
 };

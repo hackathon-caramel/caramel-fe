@@ -11,69 +11,8 @@ import { CardMeta, CreateCardMeta, StackItem } from "./utils/types";
 import Link from "next/link";
 import Image from "next/image";
 import { getRandomSlogan } from "./utils/slogans";
+import { mockAlbums } from "./utils/mockAlbums";
 
-const albums: CardMeta[] = [
-  {
-    id: "ember-odes",
-    title: "Ember Echoes",
-    subtitle: "Analog warmth in a twilight forest.",
-    gradient: "linear-gradient(135deg,#ffb347 0%,#ff6f61 60%,#b33951 100%)",
-  },
-  {
-    id: "aurora",
-    title: "Aurora Trails",
-    subtitle: "Synth waves traveling through polar skies.",
-    gradient: "linear-gradient(135deg,#74ebd5 0%,#9face6 100%)",
-  },
-  {
-    id: "embers-deep",
-    title: "Midnight Ember",
-    subtitle: "Deep drums and midnight embers colliding.",
-    gradient: "linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%)",
-  },
-  {
-    id: "campfire",
-    title: "Campfire Chorus",
-    subtitle: "Stories sung beneath starlit canopies.",
-    gradient: "linear-gradient(135deg,#fbd3e9 0%,#bb377d 100%)",
-  },
-  {
-    id: "horizon",
-    title: "Horizon Sparks",
-    subtitle: "Pulses of light cresting distant peaks.",
-    gradient: "linear-gradient(135deg,#83a4d4 0%,#b6fbff 100%)",
-  },
-  {
-    id: "crimson-dusk",
-    title: "Crimson Dusk",
-    subtitle: "Smoldering beats under red skies.",
-    gradient: "linear-gradient(135deg,#ff6f61 0%,#c31432 100%)",
-  },
-  {
-    id: "neon-river",
-    title: "Neon River",
-    subtitle: "Electric currents through a midnight city.",
-    gradient: "linear-gradient(135deg,#00d2ff 0%,#3a7bd5 100%)",
-  },
-  {
-    id: "saffron-skies",
-    title: "Saffron Skies",
-    subtitle: "Sunlit grooves over warm horizons.",
-    gradient: "linear-gradient(135deg,#f6d365 0%,#fda085 100%)",
-  },
-  {
-    id: "velvet-moon",
-    title: "Velvet Moon",
-    subtitle: "Soft echoes drifting past lunar craters.",
-    gradient: "linear-gradient(135deg,#434343 0%,#000000 100%)",
-  },
-  {
-    id: "cobalt-drift",
-    title: "Cobalt Drift",
-    subtitle: "Bluewave textures rolling offshore.",
-    gradient: "linear-gradient(135deg,#36d1dc 0%,#5b86e5 100%)",
-  },
-];
 
 const createCardMeta: CreateCardMeta = {
   kind: "create",
@@ -91,7 +30,7 @@ export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [slogan, setSlogan] = useState("이 순간에 필요한 음악 생성");
 
-  const stack = useMemo<StackItem[]>(() => [createCardMeta, ...albums], []);
+  const stack = useMemo<StackItem[]>(() => [createCardMeta, ...mockAlbums], []);
   const totalCards = stack.length;
 
   const timersRef = useRef<number[]>([]);
@@ -405,7 +344,7 @@ export default function Home() {
                       </Link>
                     ) : (
                       <Link
-                        href="/player"
+                        href={`/player/${(item as CardMeta).id}`}
                         className="flex flex-col flex-1 justify-between"
                         onPointerDown={(e) => { e.stopPropagation(); }}
                         onPointerMove={(e) => { e.stopPropagation(); }}

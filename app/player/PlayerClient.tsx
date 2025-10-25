@@ -63,6 +63,30 @@ const assetsByUuid: Record<string, { image: string; video: string; audio?: strin
       colors: ['#ff9a9e', '#fad0c4', '#fbc2eb'],
     },
   },
+  '4': {
+    image: '/4.png',
+    video: '/video4.mov',
+    audio: '/4.mp3',
+    track: {
+      id: '4',
+      title: mockAlbums[3].title,
+      artist: mockAlbums[3].subtitle,
+      duration: 210,
+      colors: ['#fbd3e9', '#bb377d', '#d4a5c0'],
+    },
+  },
+  '5': {
+    image: '/5.png',
+    video: '/video5.mov',
+    audio: '/5.mp3',
+    track: {
+      id: '5',
+      title: mockAlbums[4].title,
+      artist: mockAlbums[4].subtitle,
+      duration: 225,
+      colors: ['#83a4d4', '#b6fbff', '#a0d4e8'],
+    },
+  },
 };
 
 const mockTags = ['인디', '어쿠스틱', '봄', '새벽 감성', '산책'];

@@ -4,9 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const keywordToPlayerId: Record<string, string> = {
-  "campfire-story": "1",
-  "dawn-chorus": "2",
-  "city-echo": "3",
+  "campfire-story": "4",
+  "dawn-chorus": "5",
+  "city-echo": "4",
 };
 
 function GenerateContent() {
@@ -19,19 +19,19 @@ function GenerateContent() {
       const keyword = searchParams.get("keyword") ?? "campfire-story";
 
       // Mock delays for generation process
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 11000));
       setStatusMessage("음악을 생성하고 있어요...");
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       setStatusMessage("앨범 커버를 만들고 있어요...");
 
-      await new Promise(resolve => setTimeout(resolve, 1800));
+      await new Promise(resolve => setTimeout(resolve, 4800));
       setStatusMessage("거의 다 됐어요...");
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 3500));
 
       // Route to the corresponding player based on keyword
-      const playerId = keywordToPlayerId[keyword] || "1";
+      const playerId = keywordToPlayerId[keyword] || "4";
       router.replace(`/player/${playerId}`);
     };
 

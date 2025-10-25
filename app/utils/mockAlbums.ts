@@ -21,14 +21,14 @@ export const mockAlbums: CardMeta[] = [
   },
   {
     id: "4",
-    title: "맑은 가을날",
-    subtitle: "높고 푸른 하늘과 따스한 햇살이 담긴 풍경.",
+    title: "모두가 모인 공간",
+    subtitle: "넓은 실내에 모두 모여 함께 나누는 이야기.",
     gradient: "linear-gradient(135deg,#fbd3e9 0%,#bb377d 100%)",
   },
   {
     id: "5",
-    title: "휴식 시간",
-    subtitle: "바쁜 일상 속, 잠시 눈을 감고 쉬는 모습.",
+    title: "진실의 거울",
+    subtitle: "어떤 포장이나 꾸밈도 통하지 않는 긴장 속.",
     gradient: "linear-gradient(135deg,#83a4d4 0%,#b6fbff 100%)",
   },
 ];

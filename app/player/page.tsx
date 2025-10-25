@@ -108,27 +108,26 @@ export default function PlayerPage() {
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden text-white">
+    <div className="h-screen overflow-hidden">
       {/* 메인 플레이어 섹션 */}
-      <section className="relative h-screen w-full flex-shrink-0"
+      <section
+        className="relative h-screen w-full flex-shrink-0"
         style={{
-          background: 'linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%)',
+          background: `linear-gradient(135deg, ${mockTrack.colors[0]} 0%, ${mockTrack.colors[1]} 50%, ${mockTrack.colors[2]} 100%)`,
         }}
       >
-        {/* 배경 그라데이션 - 더 밝고 생동감있게 */}
-        <div
-          className="absolute inset-0 opacity-30 blur-3xl"
-          style={{
-            background: `linear-gradient(135deg, ${mockTrack.colors[0]} 0%, ${mockTrack.colors[1]} 50%, ${mockTrack.colors[2]} 100%)`,
-          }}
-        />
+        {/* 밝은 오버레이로 부드럽게 */}
+        <div className="absolute inset-0 bg-white/10" />
+
+        {/* 상단에서 하단으로 미묘한 그라데이션 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30" />
 
         {/* 상단 버튼들 */}
         <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6">
           {/* 좌측: 뒤로가기 버튼 */}
           <button
             onClick={handleBack}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition hover:bg-white/30 shadow-lg"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-black/20 backdrop-blur-md transition hover:bg-black/30 shadow-lg text-white"
             aria-label="뒤로가기"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +138,7 @@ export default function PlayerPage() {
           {/* 우측: 더보기 버튼 */}
           <button
             onClick={handleMore}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition hover:bg-white/30 shadow-lg"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-black/20 backdrop-blur-md transition hover:bg-black/30 shadow-lg text-white"
             aria-label="더보기"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -149,16 +148,16 @@ export default function PlayerPage() {
         </div>
 
         {/* 메인 콘텐츠 */}
-        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 pt-20">
+        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 pt-20 text-white">
 
           {/* 중앙: 앨범 아트 카드 (클릭 가능) */}
           <div className="flex-1 flex items-center justify-center max-w-md w-full px-4 min-h-0">
             <div className="relative w-full max-w-[min(85vw,380px)] max-h-[40vh]">
-              {/* Glow effect */}
+              {/* Glow effect - 더 강하게 */}
               <div
-                className="absolute inset-0 -m-6 rounded-[48px] opacity-50 blur-3xl"
+                className="absolute inset-0 -m-8 rounded-[48px] opacity-40 blur-3xl"
                 style={{
-                  background: `linear-gradient(135deg, ${mockTrack.colors[0]} 0%, ${mockTrack.colors[1]} 50%, ${mockTrack.colors[2]} 100%)`,
+                  background: `radial-gradient(circle, ${mockTrack.colors[1]} 0%, ${mockTrack.colors[0]} 100%)`,
                 }}
               />
 
@@ -243,7 +242,7 @@ export default function PlayerPage() {
           <div className="w-full max-w-md px-4 pb-6">
             <button
               onClick={handleViewSavedVideo}
-              className="w-full rounded-full bg-white/25 backdrop-blur-md px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/35 shadow-xl"
+              className="w-full rounded-full bg-black/25 backdrop-blur-md px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-black/35 shadow-xl"
             >
               저장된 영상 꺼내보기
             </button>

@@ -2,72 +2,63 @@ type AlbumCoverProps = {
   colors: [string, string, string];
   isPlaying?: boolean;
   onClick?: () => void;
+  title?: string;
+  artist?: string;
 };
 
-export default function AlbumCover({ colors, isPlaying = false, onClick }: AlbumCoverProps) {
+export default function AlbumCover({ colors, isPlaying = false, onClick, title, artist }: AlbumCoverProps) {
   const [color1, color2, color3] = colors;
 
   return (
     <button
       onClick={onClick}
-      className="relative aspect-square w-full rounded-[32px] shadow-2xl cursor-pointer transition-transform hover:scale-105 overflow-hidden"
+      aria-label={title ? `${title} - ${artist ?? ''}` : '앨범 커버 열기'}
+      className="relative aspect-square w-full rounded-[28px] cursor-pointer overflow-hidden transform transition-all hover:scale-[1.03]"
       style={{
-        boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
+        // Match main page card shadow
+        boxShadow: '0 18px 60px rgba(12, 7, 3, 0.45)',
+        backgroundImage: `linear-gradient(135deg, ${color1} 0%, ${color2} 55%, ${color3} 100%)`,
       }}
     >
-      {/* 세로 3색 배경 */}
-      <div className="absolute inset-0 flex">
-        <div className="flex-1" style={{ backgroundColor: color1 }} />
-        <div className="flex-1" style={{ backgroundColor: color2 }} />
-        <div className="flex-1" style={{ backgroundColor: color3 }} />
-      </div>
+      {/* Subtle glass ring like main cards */}
+      <div className="absolute inset-0 rounded-[28px] ring-1 ring-white/8 backdrop-blur-[2px]" />
 
-      {/* 우측 상단 둥근 모서리 장식 */}
-      <div
-        className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-30"
-        style={{ backgroundColor: color2 }}
-      />
-      <div
-        className="absolute top-8 right-4 w-20 h-20 rounded-full opacity-20"
-        style={{ backgroundColor: color3 }}
-      />
+      {/* Vinyl/Art placeholder */}
+      <div className="relative z-10 m-6 h-[calc(100%-48px)] rounded-2xl overflow-hidden bg-white/5 flex items-center justify-center">
+        <div
+          className={`relative aspect-square w-[78%] rounded-xl overflow-hidden flex items-center justify-center ${isPlaying ? 'animate-spin-slow' : ''}`}
+          style={{
+            boxShadow: 'inset 0 6px 18px rgba(0,0,0,0.35), 0 18px 40px rgba(0,0,0,0.45)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            backgroundImage: `linear-gradient(135deg, ${color1} 0%, ${color3} 100%)`,
+          }}
+        >
+          {/* Center highlight */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-1/3 h-1/3 rounded-full bg-white/20" />
+          </div>
 
-      {/* 좌측 하단 둥근 모서리 장식 */}
-      <div
-        className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full opacity-25"
-        style={{ backgroundColor: color1 }}
-      />
-      <div
-        className="absolute bottom-6 left-6 w-24 h-24 rounded-full opacity-15"
-        style={{ backgroundColor: color2 }}
-      />
-
-      {/* 중앙 작은 원들 (깊이감) */}
-      <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full opacity-10"
-        style={{ backgroundColor: color3 }}
-      />
-      <div
-        className="absolute bottom-1/3 right-1/4 w-12 h-12 rounded-full opacity-10"
-        style={{ backgroundColor: color1 }}
-      />
-
-      {/* Shine overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/0 to-transparent" />
-
-      {/* Playing animation pulse */}
-      {isPlaying && (
-        <div className="absolute inset-0 animate-pulse bg-white/5" />
-      )}
-
-      {/* 클릭 힌트 아이콘 */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-        <div className="bg-black/50 rounded-full p-3 backdrop-blur-sm">
-          <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/>
-          </svg>
+          {/* Play hint overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <div className="bg-black/50 rounded-full p-3 backdrop-blur-sm">
+              <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Title / Artist caption at bottom to mirror main design spacing */}
+      {(title || artist) && (
+        <div className="absolute left-4 right-4 bottom-4 z-20 text-white/90">
+          {title && <div className="text-sm font-semibold truncate">{title}</div>}
+          {artist && <div className="text-xs text-white/70 truncate mt-0.5">{artist}</div>}
+        </div>
+      )}
+
+      {/* Mix-blend highlight overlay similar to main cards */}
+      <span className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/35 via-white/0 to-transparent mix-blend-screen" />
     </button>
   );
 }

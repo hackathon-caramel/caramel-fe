@@ -1,32 +1,15 @@
-'use client';
+"use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   CSSProperties,
   KeyboardEvent,
   PointerEvent as ReactPointerEvent,
   WheelEvent as ReactWheelEvent,
 } from "react";
-
-type CardMeta = {
-  id: string;
-  title: string;
-  subtitle: string;
-  gradient: string;
-};
-
-type CreateCardMeta = {
-  kind: "create";
-  gradient: string;
-};
-
-type StackItem = CardMeta | CreateCardMeta;
+import { CardMeta, CreateCardMeta, StackItem } from "./utils/types";
+import Link from "next/link";
+import Image from "next/image";
 
 const albums: CardMeta[] = [
   {
@@ -63,7 +46,7 @@ const albums: CardMeta[] = [
 
 const createCardMeta: CreateCardMeta = {
   kind: "create",
-  gradient: "linear-gradient(135deg,#ffe29f 0%,#ff9248 55%,#ff5f6d 100%)",
+  gradient: "linear-gradient(135deg,#83a4d4 0%,#b6fbff 100%)",
 };
 
 const CARD_GAP = 160;
@@ -119,7 +102,7 @@ export default function Home() {
       setDragOffset(0);
       scheduleUnlock();
     },
-    [scheduleUnlock, totalCards],
+    [scheduleUnlock, totalCards]
   );
 
   const goNext = useCallback(() => shiftBy(1), [shiftBy]);
@@ -147,24 +130,30 @@ export default function Home() {
         wheelAccumulatorRef.current = 0;
       }
     },
-    [goNext, goPrev],
+    [goNext, goPrev]
   );
 
-  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (isAnimatingRef.current) return;
-    draggingRef.current = true;
-    setIsDragging(true);
-    startYRef.current = event.clientY;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.preventDefault();
-  }, []);
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (isAnimatingRef.current) return;
+      draggingRef.current = true;
+      setIsDragging(true);
+      startYRef.current = event.clientY;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    },
+    []
+  );
 
-  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current) return;
-    const deltaY = event.clientY - startYRef.current;
-    const clamped = Math.max(Math.min(deltaY, DRAG_LIMIT), -DRAG_LIMIT);
-    setDragOffset(clamped);
-  }, []);
+  const handlePointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current) return;
+      const deltaY = event.clientY - startYRef.current;
+      const clamped = Math.max(Math.min(deltaY, DRAG_LIMIT), -DRAG_LIMIT);
+      setDragOffset(clamped);
+    },
+    []
+  );
 
   const endDrag = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>, shouldSnap: boolean) => {
@@ -195,28 +184,28 @@ export default function Home() {
         goNext();
       }
     },
-    [goNext, goPrev],
+    [goNext, goPrev]
   );
 
   const handlePointerUp = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       endDrag(event, true);
     },
-    [endDrag],
+    [endDrag]
   );
 
   const handlePointerLeave = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       endDrag(event, false);
     },
-    [endDrag],
+    [endDrag]
   );
 
   const handlePointerCancel = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       endDrag(event, false);
     },
-    [endDrag],
+    [endDrag]
   );
 
   const handleKeyDown = useCallback(
@@ -230,22 +219,32 @@ export default function Home() {
         goPrev();
       }
     },
-    [goNext, goPrev],
+    [goNext, goPrev]
   );
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-between overflow-hidden bg-[radial-gradient(circle_at_top,#1a090d,#0d0307_55%,#050203)] px-6 py-10 text-amber-50" style={{ overscrollBehavior: 'none' }}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
+    <div
+      className="relative flex min-h-screen flex-col items-center justify-between overflow-hidden bg-[radial-gradient(circle_at_top,#1a090d,#0d0307_55%,#050203)] px-6 py-10 text-amber-50"
+      style={{ overscrollBehavior: "none" }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
 
       <header className="relative z-30 flex flex-col items-center gap-4 text-center">
         <span className="inline-flex items-center justify-center rounded-full border border-amber-300/40 bg-amber-500/10 px-4 py-1 text-[0.65rem] uppercase tracking-[0.35em] text-amber-200/80">
-          Fireside Archive
+          CARAMEL
         </span>
+        <Image
+          src="/logo.png"
+          alt="Campfire Vertical Stack Logo"
+          width={100}
+          height={100}
+        />
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.65rem)] font-semibold tracking-tight text-amber-100">
           Campfire Vertical Stack
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-amber-200/80 md:text-base">
-          Swipe or scroll to lift each album upward through the ember-lit column. Cards stay centered and the scrollbar stays hidden.
+          Swipe or scroll to lift each album upward through the ember-lit
+          column. Cards stay centered and the scrollbar stays hidden.
         </p>
       </header>
 
@@ -267,7 +266,8 @@ export default function Home() {
             <div className="pointer-events-none absolute -inset-16 rounded-[60px] bg-amber-500/10 blur-3xl" />
             <div className="relative h-full w-full [perspective:1200px]">
               {stack.map((item, index) => {
-                const relativePosition = index - currentIndex + dragOffset / CARD_GAP;
+                const relativePosition =
+                  index - currentIndex + dragOffset / CARD_GAP;
                 const offsetForCard = relativePosition * CARD_GAP;
                 const distance = Math.abs(relativePosition);
                 const isCreate = "kind" in item;
@@ -275,11 +275,12 @@ export default function Home() {
                 const gradient = item.gradient;
 
                 const elevate = distance < 1 ? distance * 18 : 24;
-                const defaultShadow = `0 ${18 + elevate}px ${60 + elevate * 1.2}px rgba(12, 7, 3, ${Math.max(
-                  0,
-                  0.45 - distance * 0.18,
-                )})`;
-                const createShadow = `0 ${24 + elevate}px ${80 + elevate * 1.4}px rgba(255, 149, 64, 0.45)`;
+                const defaultShadow = `0 ${18 + elevate}px ${
+                  60 + elevate * 1.2
+                }px rgba(12, 7, 3, ${Math.max(0, 0.45 - distance * 0.18)})`;
+                const createShadow = `0 ${24 + elevate}px ${
+                  80 + elevate * 1.4
+                }px rgba(255, 149, 64, 0.45)`;
 
                 const depthShift = (() => {
                   const base = Math.min(distance * 180, 420);
@@ -292,14 +293,21 @@ export default function Home() {
                   return 0;
                 })();
 
+                const isThirdOrBeyond = distance >= 2;
+                const isFourthOrBeyond = distance >= 3;
+
                 const style: CSSProperties = {
                   backgroundImage: gradient,
-                  transform: `translate3d(-50%, calc(-50% + ${offsetForCard}px), ${depthShift}px) scale(${scale})`,
+                  transform: `translate3d(-50%, calc(-50% + ${offsetForCard - 80}px), ${depthShift}px) scale(${scale})`,
                   boxShadow: isCreate ? createShadow : defaultShadow,
                   zIndex: totalCards - Math.round(distance * 10),
+                  opacity: isFourthOrBeyond ? 0 : 1,
+                  filter: isThirdOrBeyond && !isFourthOrBeyond ? 'blur(6px)' : 'none',
                   transition: isDragging
                     ? "none"
-                    : `transform ${TRANSITION_MS}ms ease-in-out, opacity ${TRANSITION_MS}ms ease-in-out, box-shadow ${TRANSITION_MS}ms ease-in-out`,
+                    : `transform ${TRANSITION_MS}ms ease-in-out, opacity ${TRANSITION_MS}ms ease-in-out, box-shadow ${TRANSITION_MS}ms ease-in-out, filter ${TRANSITION_MS}ms ease-in-out`,
+                  pointerEvents: isFourthOrBeyond ? 'none' : 'auto',
+                  willChange: 'transform, opacity, filter',
                 };
 
                 const key = isCreate ? "create-card" : (item as CardMeta).id;
@@ -311,25 +319,28 @@ export default function Home() {
                       isCreate ? "create-card" : ""
                     }`}
                     style={style}
+                    aria-hidden={isFourthOrBeyond}
                   >
                     {isCreate ? (
-                      <>
-                        <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-amber-200/80">
-                          <span className="font-semibold">00</span>
-                          <span className="rounded-full border border-amber-100/40 px-3 py-1">
+                      <Link href={"/create"}>
+                        <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-[#110502]/60">
+                          <span className="font-semibold text-[#110502]">00</span>
+                          <span className="rounded-full border border-[#110502]/30 px-3 py-1">
                             New
                           </span>
                         </header>
-                        <div className="flex flex-1 flex-col justify-center">
-                          <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#ffe29f] via-[#ff9248] to-[#ff5f6d] text-2xl font-bold text-[#1a0702] shadow-[0_20px_45px_rgba(255,122,89,0.35)]">
+                        <div className="flex flex-1 gap-4 items-center">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl text-2xl font-bold text-[#1a0702] bg-white/40">
                             +
-                          </span>
-                          <h2 className="text-[clamp(1.5rem,3vw,2.1rem)] font-semibold tracking-tight text-amber-50">
-                            새 앨범 만들기
-                          </h2>
-                          <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-amber-100/80">
-                            오늘의 불꽃을 모아 새로운 트랙을 시작하세요.
-                          </p>
+                          </div>
+                          <div className="flex flex-col justify-center">
+                            <h2 className="text-[clamp(1.55rem,3.5vw,2.15rem)] font-semibold tracking-tight text-[#110502]">
+                              새 앨범 만들기
+                            </h2>
+                            <p className="text-sm leading-relaxed text-[#110502]/80">
+                              오늘의 새로운 트랙을 시작하세요.
+                            </p>
+                          </div>
                         </div>
                         <footer className="pt-4">
                           <button
@@ -340,9 +351,12 @@ export default function Home() {
                             Start
                           </button>
                         </footer>
-                      </>
+                      </Link>
                     ) : (
-                      <>
+                      <Link
+                        href={`/player/${(item as CardMeta).id}`}
+                        className="flex flex-col flex-1 justify-between"
+                      >
                         <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-[#110502]/60">
                           <span className="font-semibold">
                             {String(index).padStart(2, "0")}
@@ -367,7 +381,7 @@ export default function Home() {
                             Play Preview
                           </button>
                         </footer>
-                      </>
+                      </Link>
                     )}
                     <span className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/35 via-white/0 to-transparent mix-blend-screen" />
                   </article>

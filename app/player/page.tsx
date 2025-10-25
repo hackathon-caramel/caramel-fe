@@ -167,6 +167,8 @@ export default function PlayerPage() {
                 colors={mockTrack.colors}
                 isPlaying={isPlaying}
                 onClick={openVideoModal}
+                title={mockTrack.title}
+                artist={mockTrack.artist}
               />
             </div>
           </div>

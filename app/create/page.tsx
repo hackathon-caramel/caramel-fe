@@ -115,7 +115,7 @@ export default function CreatePage() {
   }, []);
 
   const navigateToLoading = useCallback(() => {
-    router.push("/create/loading");
+    router.push("/create/loading/video");
   }, [router]);
 
   const persistRecording = useCallback(
@@ -128,6 +128,7 @@ export default function CreatePage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         try {
+          sessionStorage.removeItem("create-upload-response");
           sessionStorage.setItem(
             "create-recording",
             typeof reader.result === "string" ? reader.result : "",

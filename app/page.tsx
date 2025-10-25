@@ -313,25 +313,34 @@ export default function Home() {
                     style={style}
                   >
                     {isCreate ? (
-                      <button
-                        type="button"
-                        className="flex h-full w-full flex-col items-center justify-center gap-5 rounded-[22px] bg-black/10 px-10 py-12 text-center transition duration-300 ease-out hover:-translate-y-1 hover:bg-black/20 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/40"
-                        onClick={handleAddAlbum}
-                        aria-label="Create new album"
-                      >
-                        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ffe29f] via-[#ff9248] to-[#ff5f6d] text-3xl font-bold text-[#1a0702] shadow-[0_25px_55px_rgba(255,122,89,0.35)]">
-                          +
-                        </span>
-                        <h2 className="text-[clamp(1.5rem,3vw,2.1rem)] font-semibold tracking-tight text-amber-50">
-                          새 앨범 만들기
-                        </h2>
-                        <p className="max-w-xs text-sm leading-relaxed text-amber-100/80">
-                          오늘의 불꽃을 모아 새로운 트랙을 시작하세요.
-                        </p>
-                        <span className="text-[0.75rem] uppercase tracking-[0.36em] text-amber-100/70">
-                          Start Recording
-                        </span>
-                      </button>
+                      <>
+                        <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-amber-200/80">
+                          <span className="font-semibold">00</span>
+                          <span className="rounded-full border border-amber-100/40 px-3 py-1">
+                            New
+                          </span>
+                        </header>
+                        <div className="flex flex-1 flex-col justify-center">
+                          <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#ffe29f] via-[#ff9248] to-[#ff5f6d] text-2xl font-bold text-[#1a0702] shadow-[0_20px_45px_rgba(255,122,89,0.35)]">
+                            +
+                          </span>
+                          <h2 className="text-[clamp(1.5rem,3vw,2.1rem)] font-semibold tracking-tight text-amber-50">
+                            새 앨범 만들기
+                          </h2>
+                          <p className="mt-3 max-w-[18rem] text-sm leading-relaxed text-amber-100/80">
+                            오늘의 불꽃을 모아 새로운 트랙을 시작하세요.
+                          </p>
+                        </div>
+                        <footer className="pt-4">
+                          <button
+                            type="button"
+                            onClick={handleAddAlbum}
+                            className="inline-flex items-center gap-2 rounded-full bg-white/40 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-[#110502] shadow-[0_15px_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-1 hover:bg-white/55 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/60"
+                          >
+                            Start
+                          </button>
+                        </footer>
+                      </>
                     ) : (
                       <>
                         <header className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.28em] text-[#110502]/60">

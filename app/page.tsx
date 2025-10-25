@@ -40,18 +40,9 @@ export default function Home() {
   const wheelAccumulatorRef = useRef(0);
 
   useEffect(() => {
-    const preventScroll = (event: WheelEvent | TouchEvent) => {
-      event.preventDefault();
-    };
-
-    window.addEventListener("wheel", preventScroll, { passive: false });
-    window.addEventListener("touchmove", preventScroll, { passive: false });
-
     return () => {
       timersRef.current.forEach((timer) => clearTimeout(timer));
       timersRef.current = [];
-      window.removeEventListener("wheel", preventScroll);
-      window.removeEventListener("touchmove", preventScroll);
     };
   }, []);
 
@@ -117,7 +108,6 @@ export default function Home() {
       setIsDragging(true);
       startYRef.current = event.clientY;
       event.currentTarget.setPointerCapture(event.pointerId);
-      event.preventDefault();
     },
     []
   );
@@ -126,7 +116,9 @@ export default function Home() {
     (event: ReactPointerEvent<HTMLDivElement>) => {
       if (!draggingRef.current) return;
       const deltaY = event.clientY - startYRef.current;
-      const clamped = Math.max(Math.min(deltaY, DRAG_LIMIT), -DRAG_LIMIT);
+      // Increase sensitivity for touch by multiplying by 1.2
+      const enhanced = deltaY * 1.2;
+      const clamped = Math.max(Math.min(enhanced, DRAG_LIMIT), -DRAG_LIMIT);
       setDragOffset(clamped);
     },
     []
@@ -144,18 +136,20 @@ export default function Home() {
       }
 
       const deltaY = event.clientY - startYRef.current;
+      // Match the enhanced sensitivity from handlePointerMove
+      const enhanced = deltaY * 1.2;
       setDragOffset(0);
 
       if (!shouldSnap || isAnimatingRef.current) {
         return;
       }
 
-      const threshold = CARD_GAP * 0.4;
-      if (Math.abs(deltaY) < threshold) {
+      const threshold = CARD_GAP * 0.25;
+      if (Math.abs(enhanced) < threshold) {
         return;
       }
 
-      if (deltaY > 0) {
+      if (enhanced > 0) {
         goPrev();
       } else {
         goNext();
@@ -202,7 +196,7 @@ export default function Home() {
   return (
     <div
       className="relative flex min-h-screen flex-col items-center justify-between overflow-hidden bg-[radial-gradient(circle_at_top,#1a090d,#0d0307_55%,#050203)] px-6 py-10 text-amber-50"
-      style={{ overscrollBehavior: "none" }}
+      style={{ overscrollBehavior: "none", touchAction: "pan-y" }}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
 
@@ -231,7 +225,8 @@ export default function Home() {
       <main className="relative z-20 flex w-full flex-1 flex-col items-center justify-center">
         <section className="relative flex w-full max-w-[380px] items-center justify-center">
           <div
-            className="relative h-[72vh] w-full max-h-[660px] cursor-grab touch-none focus:outline-none active:cursor-grabbing"
+            className="relative h-[72vh] w-full max-h-[660px] cursor-grab focus:outline-none active:cursor-grabbing"
+            style={{ touchAction: "pan-y" }}
             onWheel={handleWheel}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}

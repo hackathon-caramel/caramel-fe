@@ -240,11 +240,10 @@ export default function Home() {
           height={100}
         />
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.65rem)] font-semibold tracking-tight text-amber-100">
-          Campfire Vertical Stack
+          이 순간에 필요한 음악 생성
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-amber-200/80 md:text-base">
-          Swipe or scroll to lift each album upward through the ember-lit
-          column. Cards stay centered and the scrollbar stays hidden.
+          
         </p>
       </header>
 

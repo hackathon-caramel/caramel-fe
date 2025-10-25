@@ -114,6 +114,18 @@ export default function CreatePage() {
     };
   }, []);
 
+  // After cameraReady toggles true, ensure the video element receives the stream
+  useEffect(() => {
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    if (!cameraReady || !video || !stream) return;
+    try {
+      // Attach the stream once the video is actually mounted
+      (video as any).srcObject = stream;
+      video.play().catch(() => {/* ignore autoplay rejection */});
+    } catch {/* ignore */}
+  }, [cameraReady]);
+
   const navigateToLoading = useCallback(() => {
     router.push("/create/loading/video");
   }, [router]);
@@ -218,6 +230,23 @@ export default function CreatePage() {
     return (remainingMs / 1000).toFixed(1);
   }, [remainingMs]);
 
+  // Show a loading screen while camera is preparing
+  if (!cameraReady && !error) {
+    return (
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,#1a090d,#0d0307_55%,#050203)] text-amber-50">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
+
+        <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-white" aria-hidden="true" />
+          <h1 className="text-[clamp(1.6rem,3vw+1rem,2.4rem)] font-semibold">카메라를 준비하고 있어요</h1>
+          <p className="max-w-xl text-sm leading-relaxed text-amber-100/80 md:text-base">
+            권한을 허용해 주시면 곧 카메라가 열립니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-between overflow-hidden bg-black text-white">
       <video
@@ -231,9 +260,6 @@ export default function CreatePage() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/80 pointer-events-none" />
 
       <header className="relative z-20 flex w-full max-w-5xl flex-col items-center gap-3 px-6 pt-12 text-center md:pt-16">
-        <span className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-4 py-1 text-[0.65rem] uppercase tracking-[0.35em] text-white/80">
-          Fireside Capture
-        </span>
         <h1 className="text-[clamp(1.9rem,3vw+1rem,2.8rem)] font-semibold tracking-tight text-white">
           새로운 앨범을 불러올 시간이에요
         </h1>

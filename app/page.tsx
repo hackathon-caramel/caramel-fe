@@ -10,6 +10,7 @@ import type {
 import { CardMeta, CreateCardMeta, StackItem } from "./utils/types";
 import Link from "next/link";
 import Image from "next/image";
+import { getRandomSlogan } from "./utils/slogans";
 
 const albums: CardMeta[] = [
   {
@@ -42,6 +43,36 @@ const albums: CardMeta[] = [
     subtitle: "Pulses of light cresting distant peaks.",
     gradient: "linear-gradient(135deg,#83a4d4 0%,#b6fbff 100%)",
   },
+  {
+    id: "crimson-dusk",
+    title: "Crimson Dusk",
+    subtitle: "Smoldering beats under red skies.",
+    gradient: "linear-gradient(135deg,#ff6f61 0%,#c31432 100%)",
+  },
+  {
+    id: "neon-river",
+    title: "Neon River",
+    subtitle: "Electric currents through a midnight city.",
+    gradient: "linear-gradient(135deg,#00d2ff 0%,#3a7bd5 100%)",
+  },
+  {
+    id: "saffron-skies",
+    title: "Saffron Skies",
+    subtitle: "Sunlit grooves over warm horizons.",
+    gradient: "linear-gradient(135deg,#f6d365 0%,#fda085 100%)",
+  },
+  {
+    id: "velvet-moon",
+    title: "Velvet Moon",
+    subtitle: "Soft echoes drifting past lunar craters.",
+    gradient: "linear-gradient(135deg,#434343 0%,#000000 100%)",
+  },
+  {
+    id: "cobalt-drift",
+    title: "Cobalt Drift",
+    subtitle: "Bluewave textures rolling offshore.",
+    gradient: "linear-gradient(135deg,#36d1dc 0%,#5b86e5 100%)",
+  },
 ];
 
 const createCardMeta: CreateCardMeta = {
@@ -58,6 +89,7 @@ export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [slogan, setSlogan] = useState("이 순간에 필요한 음악 생성");
 
   const stack = useMemo<StackItem[]>(() => [createCardMeta, ...albums], []);
   const totalCards = stack.length;
@@ -82,6 +114,11 @@ export default function Home() {
       window.removeEventListener("wheel", preventScroll);
       window.removeEventListener("touchmove", preventScroll);
     };
+  }, []);
+
+  // Pick a random slogan after mount to avoid hydration mismatch
+  useEffect(() => {
+    setSlogan(getRandomSlogan());
   }, []);
 
   const scheduleUnlock = useCallback(() => {
@@ -231,17 +268,21 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
 
       <header className="relative z-30 flex flex-col items-center gap-4 text-center">
-        <span className="inline-flex items-center justify-center rounded-full border border-amber-300/40 bg-amber-500/10 px-4 py-1 text-[0.65rem] uppercase tracking-[0.35em] text-amber-200/80">
-          CARAMEL
-        </span>
         <Image
-          src="/logo.png"
+          src="/logo2.png"
           alt="Campfire Vertical Stack Logo"
-          width={100}
-          height={100}
+          width={40}
+          height={40}
+        />
+        <Image
+          src="/title.png"
+          alt="Campfire Title"
+          width={220}
+          height={48}
+          className="h-auto w-[min(220px,40vw)]"
         />
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.65rem)] font-semibold tracking-tight text-amber-100">
-          이 순간에 필요한 음악 생성
+          {slogan}
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-amber-200/80 md:text-base">
           
@@ -266,8 +307,11 @@ export default function Home() {
             <div className="pointer-events-none absolute -inset-16 rounded-[60px] bg-amber-500/10 blur-3xl" />
             <div className="relative h-full w-full [perspective:1200px]">
               {stack.map((item, index) => {
-                const relativePosition =
-                  index - currentIndex + dragOffset / CARD_GAP;
+                // Wrap-around so the list behaves like an infinite circular stack
+                let delta = index - currentIndex;
+                if (delta > totalCards / 2) delta -= totalCards;
+                if (delta < -totalCards / 2) delta += totalCards;
+                const relativePosition = delta + dragOffset / CARD_GAP;
                 const offsetForCard = relativePosition * CARD_GAP;
                 const distance = Math.abs(relativePosition);
                 const isCreate = "kind" in item;

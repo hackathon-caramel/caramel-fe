@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import AlbumCover from "./components/AlbumCover";
+import Tonearm from "./components/Tonearm";
 
 type Track = {
   id: string;
@@ -34,6 +35,12 @@ export default function PlayerPage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const rotationDegRef = useRef(0);
+  const [rotationDeg, setRotationDeg] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  const lastTsRef = useRef<number | null>(null);
+  const [repeat, setRepeat] = useState(false);
+  const [shuffle, setShuffle] = useState(false);
 
   const progress = (currentTime / mockTrack.duration) * 100;
 
@@ -50,23 +57,62 @@ export default function PlayerPage() {
     if (isPlaying) {
       interval = window.setInterval(() => {
         setCurrentTime((prev) => {
-          if (prev >= mockTrack.duration) {
-            return 0;
+          const next = prev + 1;
+          if (next >= mockTrack.duration) {
+            if (repeat) {
+              return 0; // loop to start
+            }
+            // stop at end when not repeating
+            setIsPlaying(false);
+            return mockTrack.duration;
           }
-          return prev + 1;
+          return next;
         });
       }, 1000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
+  }, [isPlaying, repeat]);
+
+  // 레코드 회전 상태를 기억하고, 재생 중에만 계속 회전
+  useEffect(() => {
+    const periodMs = 10000; // 10s per rotation (matches animate-spin-slow)
+    const degPerMs = 360 / periodMs;
+
+    const loop = (ts: number) => {
+      if (lastTsRef.current == null) lastTsRef.current = ts;
+      const dt = ts - lastTsRef.current;
+      lastTsRef.current = ts;
+      rotationDegRef.current = (rotationDegRef.current + dt * degPerMs) % 360;
+      setRotationDeg(rotationDegRef.current);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    if (isPlaying) {
+      rafRef.current = requestAnimationFrame(loop);
+    } else {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTsRef.current = null;
+      // keep rotationDeg as-is to remember stop position
+    }
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTsRef.current = null;
+    };
   }, [isPlaying]);
 
   // 재생/일시정지 토글 함수
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
-
+    // If video element isn't mounted (modal closed), still toggle UI state
+    if (!video) {
+      setIsPlaying((prev) => !prev);
+      return;
+    }
     if (video.paused) {
       video.play();
       setIsPlaying(true);
@@ -78,11 +124,33 @@ export default function PlayerPage() {
 
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = (parseFloat(e.target.value) / 100) * mockTrack.duration;
+    if (!repeat && newTime >= mockTrack.duration) {
+      setCurrentTime(mockTrack.duration);
+      setIsPlaying(false);
+      return;
+    }
     setCurrentTime(newTime);
-  }, []);
+  }, [repeat]);
+
+  // 진행도에 따라 톤암 각도 산출: 바깥(-6deg) → 안쪽(28deg)
+  const tonearmAngle = useMemo(() => {
+    const progress = Math.min(Math.max(currentTime / mockTrack.duration, 0), 1);
+    const min = -6;
+    const max = 28;
+    const base = min + (max - min) * progress;
+    const bias = -3; // 살짝 왼쪽으로 틀기
+    return base + bias;
+  }, [currentTime]);
 
   // 다음 곡 (기능은 현재 목업)
   const handleNextTrack = () => {
+    if (shuffle) {
+      const t = Math.floor(Math.random() * mockTrack.duration);
+      console.log("랜덤 위치로 이동:", t, "sec");
+      setCurrentTime(t);
+      setIsPlaying(true);
+      return;
+    }
     console.log("다음 곡으로 넘어갑니다.");
     setCurrentTime(0);
   };
@@ -108,16 +176,13 @@ export default function PlayerPage() {
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden text-white">
+    <div className="relative h-screen overflow-hidden text-white bg-[radial-gradient(circle_at_top,#1a090d,#0d0307_55%,#050203)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_40%_at_50%_16%,rgba(255,173,94,0.35),transparent_70%),radial-gradient(55%_45%_at_18%_88%,rgba(255,84,62,0.22),transparent_75%),radial-gradient(50%_35%_at_80%_78%,rgba(99,102,241,0.18),transparent_70%)] blur-[6px]" />
       {/* 메인 플레이어 섹션 */}
-      <section className="relative h-screen w-full flex-shrink-0"
-        style={{
-          background: 'linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%)',
-        }}
-      >
+      <section className="relative h-screen w-full flex-shrink-0">
         {/* 배경 그라데이션 - 더 밝고 생동감있게 */}
         <div
-          className="absolute inset-0 opacity-30 blur-3xl"
+          className="absolute inset-0 opacity-25 blur-3xl"
           style={{
             background: `linear-gradient(135deg, ${mockTrack.colors[0]} 0%, ${mockTrack.colors[1]} 50%, ${mockTrack.colors[2]} 100%)`,
           }}
@@ -169,7 +234,10 @@ export default function PlayerPage() {
                 onClick={openVideoModal}
                 title={mockTrack.title}
                 artist={mockTrack.artist}
+                rotationDeg={rotationDeg}
               />
+              {/* Tonearm overlay */}
+              <Tonearm isPlaying={isPlaying} angle={tonearmAngle} />
             </div>
           </div>
 
@@ -203,6 +271,19 @@ export default function PlayerPage() {
 
             {/* 컨트롤 버튼 */}
             <div className="flex items-center justify-center gap-6 md:gap-8">
+              {/* Shuffle toggle (left side) */}
+              <button
+                onClick={() => setShuffle((prev) => !prev)}
+                className={`flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110 ${
+                  shuffle ? 'bg-white text-black border-white/0 shadow-xl' : 'text-white border-white/30 bg-white/10 hover:bg-white/20'
+                }`}
+                aria-label={`랜덤 재생 ${shuffle ? '끄기' : '켜기'}`}
+                title={shuffle ? '랜덤 재생: 켜짐' : '랜덤 재생: 꺼짐'}
+              >
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4 7h3.5c1.2 0 2.3.54 3.08 1.46l2.35 2.77A5 5 0 0 0 15.5 13H20l-2.5 2.5 1.4 1.4L23 12l-4.1-4.9-1.4 1.4L20 11h-4.5c-.92 0-1.8-.4-2.4-1.1L10.8 7.1A6.5 6.5 0 0 0 7.5 5H4v2zM4 17h3.5c1.2 0 2.3-.54 3.08-1.46l.42-.5-1.53-1.29-.42.5c-.6.7-1.48 1.1-2.35 1.1H4v2z" />
+                </svg>
+              </button>
               <button
                 className="text-white transition hover:scale-110"
                 aria-label="이전 곡"
@@ -235,6 +316,20 @@ export default function PlayerPage() {
               >
                 <svg className="h-8 w-8 md:h-9 md:w-9" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                </svg>
+              </button>
+
+              {/* Repeat toggle */}
+              <button
+                onClick={() => setRepeat((prev) => !prev)}
+                className={`flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110 ${
+                  repeat ? 'bg-white text-black border-white/0 shadow-xl' : 'text-white border-white/30 bg-white/10 hover:bg-white/20'
+                }`}
+                aria-label={`반복 재생 ${repeat ? '끄기' : '켜기'}`}
+                title={repeat ? '반복 재생: 켜짐' : '반복 재생: 꺼짐'}
+              >
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17 2l4 4-4 4V7H9a4 4 0 0 0-4 4v1H3V11a6 6 0 0 1 6-6h8V2zM7 22l-4-4 4-4v3h8a4 4 0 0 0 4-4v-1h2v1a6 6 0 0 1-6 6H7v3z" />
                 </svg>
               </button>
             </div>

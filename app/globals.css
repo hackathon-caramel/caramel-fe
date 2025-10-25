@@ -49,3 +49,18 @@ body {
 .glass-ring {
   box-shadow: 0 18px 60px rgba(12, 7, 3, 0.45);
 }
+
+/* Subtle tonearm sway animation */
+@keyframes tonearm-sway {
+  0% { transform: rotate(-0.8deg); }
+  50% { transform: rotate(0.8deg); }
+  100% { transform: rotate(-0.8deg); }
+}
+
+.tonearm-sway {
+  animation: tonearm-sway 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tonearm-sway { animation: none; }
+}
